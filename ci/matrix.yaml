@@ -103,6 +103,8 @@ workflows:
     - {jobs: ['test'], project: 'nvbench_helper', ctk: '12.X', cxx: ['gcc10', 'clang14'], gpu: 'rtx2080'}
     - {jobs: ['test'], project: 'nvbench_helper', ctk: '13.0', cxx: ['gcc15', 'clang20'], gpu: 'rtx2080'}
     - {jobs: ['test'], project: 'nvbench_helper', ctk: '13.X', cxx: ['gcc',   'clang'],   gpu: 'rtx2080'}
+    - {jobs: ['build', 'test'], project: 'samples', ctk: '13.X', cxx: 'gcc14',    std: 17, gpu: 'rtx2080'}
+    - {jobs: ['build'],         project: 'samples', ctk: '13.X', cxx: 'msvc2022', std: 17}
     # NVHPC build
     - {jobs: ['build'], cxx: 'nvhpc', ctk: 'nvhpc', std: 'all', project: ['libcudacxx', 'cub', 'thrust', 'cudax', 'stdpar'], cpu: ['amd64', 'arm64']}
     # clang-cuda
@@ -241,6 +243,8 @@ workflows:
     - {jobs: ['test'], project: 'nvbench_helper', ctk: '12.X', cxx: ['gcc10', 'clang14'], gpu: 'rtx2080'}
     - {jobs: ['test'], project: 'nvbench_helper', ctk: '13.0', cxx: ['gcc15', 'clang20'], gpu: 'rtx2080'}
     - {jobs: ['test'], project: 'nvbench_helper', ctk: '13.X', cxx: ['gcc',   'clang'],   gpu: 'rtx2080'}
+    - {jobs: ['build', 'test'], project: 'samples', ctk: ['12.X', '13.X'], cxx: ['gcc12', 'gcc14', 'clang19'], std: 17, gpu: 'rtx2080'}
+    - {jobs: ['build'],         project: 'samples', ctk: ['12.X', '13.X'], cxx: ['msvc2019', 'msvc2022'],     std: 17}
     # NVHPC build
     - {jobs: ['build'], cxx: 'nvhpc-prev', ctk: 'nvhpc-prev', std: 'all', project: ['libcudacxx', 'cub', 'thrust', 'cudax', 'stdpar'], cpu: ['amd64', 'arm64']}
     - {jobs: ['build'], cxx: 'nvhpc',      ctk: 'nvhpc',      std: 'all', project: ['libcudacxx', 'cub', 'thrust', 'cudax', 'stdpar'], cpu: ['amd64', 'arm64']}
@@ -336,6 +340,8 @@ workflows:
     - {jobs: ['test'], project: 'nvbench_helper', ctk: '12.X', cxx: ['gcc10', 'clang14'], gpu: 'rtx2080'}
     - {jobs: ['test'], project: 'nvbench_helper', ctk: '13.0', cxx: ['gcc15', 'clang20'], gpu: 'rtx2080'}
     - {jobs: ['test'], project: 'nvbench_helper', ctk: '13.X', cxx: ['gcc',   'clang'],   gpu: 'rtx2080'}
+    - {jobs: ['build', 'test'], project: 'samples', ctk: ['12.X', '13.X'], cxx: ['gcc', 'clang'],       std: 17, gpu: 'rtx2080'}
+    - {jobs: ['build'],         project: 'samples', ctk: ['12.X', '13.X'], cxx: ['msvc2019', 'msvc2022'], std: 17}
     # NVHPC build
     - {jobs: ['build'], cxx: 'nvhpc-prev', ctk: 'nvhpc-prev', std: 'all', project: ['libcudacxx', 'cub', 'thrust', 'cudax', 'stdpar'], cpu: ['amd64', 'arm64']}
     - {jobs: ['build'], cxx: 'nvhpc',      ctk: 'nvhpc',      std: 'all', project: ['libcudacxx', 'cub', 'thrust', 'cudax', 'stdpar'], cpu: ['amd64', 'arm64']}
@@ -550,6 +556,12 @@ jobs:
   test_py_compute_minimal: { name: "Test cuda.compute minimal", gpu: true, needs: 'build_py_wheel', force_producer_ctk: "pybuild", invoke: { prefix: 'test_cuda_compute_minimal'} }
   test_py_examples: { name: "Test cuda.cccl.examples",     gpu: true,  needs: 'build_py_wheel', force_producer_ctk: "pybuild", invoke: { prefix: 'test_cuda_cccl_examples'} }
 
+  # CCCL Samples: driven by ci/build_samples.sh / ci/test_samples.sh /
+  # ci/windows/build_samples.ps1. Always use the extended CUDA devcontainer
+  # so cuBLAS/cuSPARSE/GL headers are present.
+  build_samples: { name: 'Build', gpu: false, cuda_ext: true, invoke: { prefix: 'build' } }
+  test_samples:  { name: 'Test',  gpu: true,  cuda_ext: true, needs: 'build_samples', invoke: { prefix: 'test' } }
+
   # Run jobs for 'target' project (ci/util/build_and_test_targets.sh):
   run_cpu: { gpu: false }
   run_gpu: { gpu: true  }
@@ -637,6 +649,16 @@ projects:
     job_map:
       build: []
       test: ['test_nobuild']
+
+  # CCCL Samples. Standalone CMake project at samples/ - not part of the
+  # CCCL top-level build. Samples pin C++17, and always run in the extended
+  # CUDA devcontainer to have cuBLAS / cuSPARSE / GL headers available.
+  samples:
+    name: 'CCCL Samples'
+    stds: [17]
+    job_map:
+      build: ['build_samples']
+      test: ['test_samples']
 
   # Run specific build_and_test_targets.sh invocations across the CI matrix.
   # Use the override workflow and supply arguments via the `args` tag.

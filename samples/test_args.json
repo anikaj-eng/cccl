@@ -1,0 +1,34 @@
+{
+  "particles": {
+    "args": [
+      "-file=data/ref_particles.bin"
+    ]
+  },
+  "marchingCubes": {
+    "runs": [
+      {
+        "args": [
+          "-dump=0",
+          "-file=data/posArray.bin"
+        ]
+      },
+      {
+        "args": [
+          "-dump=1",
+          "-file=data/normalArray.bin"
+        ]
+      },
+      {
+        "args": [
+          "-dump=2",
+          "-file=data/compVoxelArray.bin"
+        ]
+      }
+    ]
+  },
+  "smokeParticles": {
+    "args": [
+      "-qatest"
+    ]
+  }
+}

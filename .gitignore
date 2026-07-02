@@ -26,3 +26,6 @@ bench-artifacts/
 CLAUDE.local.md
 .codegraph/*
 .cursor/rules/codegraph.mdc
+# CCCL samples
+test-results*/
+.pytest_cache/

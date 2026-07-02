@@ -28,3 +28,10 @@ python -m pip install "${CUDA_CCCL_WHEEL_PATH}[test-cu${cuda_major_version}]"
 # Run tests for parallel module
 cd "/home/coder/cccl/python/cuda_cccl/tests/"
 python -m pytest -n 6 test_examples.py
+
+# Run the CCCL sample scripts (samples/python/) as pytest cases so
+# the Python samples get exercised together with the other example tests.
+if [[ -f /home/coder/cccl/samples/python/test_samples.py ]]; then
+    cd /home/coder/cccl/samples/python
+    python -m pytest -n 4 test_samples.py
+fi

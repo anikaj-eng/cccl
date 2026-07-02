@@ -6,7 +6,7 @@ A simple demonstration of arrive wait barriers.
 
 ## Key Concepts
 
-Arrive Wait Barrier
+Arrive Wait Barrier, CCCL libcu++
 
 ## Supported SM Architectures
 
@@ -22,11 +22,15 @@ x86_64, armv7l, aarch64
 
 ## CUDA APIs involved
 
+### [CCCL libcu++](https://nvidia.github.io/cccl/libcudacxx/)
+
+`cuda::barrier` (`<cuda/barrier>`), `cuda::thread_scope_block`
+
 ### [CUDA Runtime API](http://docs.nvidia.com/cuda/cuda-runtime-api/index.html)
 cudaStreamCreateWithFlags, cudaFree, cudaDeviceGetAttribute, cudaMallocHost, cudaFreeHost, cudaStreamSynchronize, cudaLaunchCooperativeKernel, cudaMalloc, cudaOccupancyMaxActiveBlocksPerMultiprocessor, cudaMemcpyAsync, cudaOccupancyMaxPotentialBlockSize
 
 ## Dependencies needed to build/run
-[C++11 CUDA](../../../README.md#c11-cuda), [MBCG](../../../README.md#multi-block-cooperative-groups)
+CCCL (bundled with the CUDA Toolkit; see [`<cuda/barrier>`](https://nvidia.github.io/cccl/libcudacxx/standard_api/synchronization_library/barrier.html)), Multi-Block Cooperative Groups (MBCG).
 
 ## Prerequisites
 

@@ -22,13 +22,17 @@ x86_64, aarch64
 
 ## CUDA APIs involved
 
-### [CCCL CUB](https://nvidia.github.io/cccl/unstable/cub/index.html)
+### [CCCL CUB](https://nvidia.github.io/cccl/cub/)
 
-cub::DeviceFind::FindIf, cub::DeviceFind::LowerBound, cub::DeviceFind::UpperBound
+`cub::DeviceFind::FindIf`, `cub::DeviceFind::LowerBound`, `cub::DeviceFind::UpperBound` (`<cub/device/device_find.cuh>`)
 
-### [CCCL libcu++](https://nvidia.github.io/cccl/unstable/libcudacxx/index.html)
+### [CCCL Thrust](https://nvidia.github.io/cccl/thrust/)
 
-cuda::std::less
+`thrust::device_vector` (`<thrust/device_vector.h>`), `thrust::host_vector` (`<thrust/host_vector.h>`), `thrust::raw_pointer_cast`
+
+### [CCCL libcu++](https://nvidia.github.io/cccl/libcudacxx/)
+
+`cuda::std::less` (`<cuda/std/functional>`)
 
 ### [CUDA Runtime API](http://docs.nvidia.com/cuda/cuda-runtime-api/index.html)
 

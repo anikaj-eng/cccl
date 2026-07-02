@@ -2,11 +2,11 @@
 
 ## Description
 
-This sample is an implementation of a simple line-of-sight algorithm: Given a height map and a ray originating at some observation point, it computes all the points along the ray that are visible from the observation point. The implementation is based on the Thrust library.
+This sample is an implementation of a simple line-of-sight algorithm: Given a height map and a ray originating at some observation point, it computes all the points along the ray that are visible from the observation point. The implementation is built on CCCL Thrust: sample points are stored in `thrust::device_vector`, angles to the observation point are computed with a Thrust unary transform, and a `thrust::inclusive_scan` with `thrust::maximum` produces the running-maximum angle used to classify visible points.
 
 ## Key Concepts
 
-Thrust Library
+CCCL Thrust, Parallel Scan, Inclusive Prefix Max
 
 ## Supported SM Architectures
 
@@ -22,8 +22,15 @@ x86_64, armv7l
 
 ## CUDA APIs involved
 
+### [CCCL Thrust](https://nvidia.github.io/cccl/thrust/)
+
+`thrust::device_vector` (`<thrust/device_vector.h>`), `thrust::host_vector` (`<thrust/host_vector.h>`), `thrust::inclusive_scan` (`<thrust/scan.h>`), `thrust::copy` (`<thrust/copy.h>`), `thrust::maximum`, `thrust::raw_pointer_cast`
+
 ### [CUDA Runtime API](http://docs.nvidia.com/cuda/cuda-runtime-api/index.html)
 cudaCreateChannelDesc, cudaMallocArray, cudaFreeArray, cudaDeviceSynchronize, cudaCreateTextureObject
+
+## Dependencies needed to build/run
+CCCL Thrust (bundled with the CUDA Toolkit).
 
 ## Prerequisites
 

@@ -2,11 +2,11 @@
 
 ## Description
 
-This sample demonstrates a very fast and efficient parallel radix sort uses Thrust library. The included RadixSort class can sort either key-value pairs (with float or unsigned integer keys) or keys only.
+This sample demonstrates a very fast and efficient parallel radix sort using CCCL Thrust. The included RadixSort wrapper drives `thrust::sort` and `thrust::sort_by_key` on `thrust::device_vector<unsigned int|float>` and can sort either key-value pairs or keys only. Input data is generated on the host with `thrust::default_random_engine` and `thrust::uniform_int_distribution` / `thrust::uniform_real_distribution`.
 
 ## Key Concepts
 
-Data-Parallel Algorithms, Performance Strategies
+CCCL Thrust, Data-Parallel Algorithms, Performance Strategies
 
 ## Supported SM Architectures
 
@@ -22,8 +22,15 @@ x86_64, armv7l
 
 ## CUDA APIs involved
 
+### [CCCL Thrust](https://nvidia.github.io/cccl/thrust/)
+
+`thrust::device_vector` (`<thrust/device_vector.h>`), `thrust::host_vector` (`<thrust/host_vector.h>`), `thrust::sort` and `thrust::sort_by_key` (`<thrust/sort.h>`), `thrust::sequence` (`<thrust/sequence.h>`), `thrust::copy` (`<thrust/copy.h>`), `thrust::is_sorted`, `thrust::default_random_engine`, `thrust::uniform_int_distribution`, `thrust::uniform_real_distribution` (`<thrust/random.h>`)
+
 ### [CUDA Runtime API](http://docs.nvidia.com/cuda/cuda-runtime-api/index.html)
 cudaEventSynchronize, cudaEventRecord, cudaGetDevice, cudaEventDestroy, cudaEventElapsedTime, cudaGetDeviceProperties, cudaEventCreate
+
+## Dependencies needed to build/run
+CCCL Thrust (bundled with the CUDA Toolkit).
 
 ## Prerequisites
 

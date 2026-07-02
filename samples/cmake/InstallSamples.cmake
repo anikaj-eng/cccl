@@ -260,8 +260,8 @@ function(setup_samples_install)
                    NOT \"\${SAMPLE_FILE}\" MATCHES \"/CMakeFiles/\" AND
                    NOT \"\${SAMPLE_FILE}\" MATCHES \"\\\\\\\\CMakeFiles\\\\\\\\\")
 
-                    # Check if file has required extension (fatbin, ptx, bc, raw, ppm, bin, dat, nv12) or is executable
-                    if(SAMPLE_EXT MATCHES \"\\\\.(fatbin|ptx|bc|raw|ppm|bin|dat|nv12)$\")
+                    # Check if file has required extension (fatbin, ptx, bc, raw, ppm) or is executable
+                    if(SAMPLE_EXT MATCHES \"\\\\.(fatbin|ptx|bc|raw|ppm)$\")
                         set(SHOULD_INSTALL TRUE)
                     # Check for shared libraries: .dll (Windows) or .so (Linux)
                     elseif(SAMPLE_EXT MATCHES \"\\\\.(dll|so)$\")
@@ -292,13 +292,6 @@ function(setup_samples_install)
                     get_filename_component(FILE_NAME \"\${SAMPLE_FILE}\" NAME)
                     set(DEST_FILE \"\${INSTALL_DIR}/\${FILE_NAME}\")
 
-                    # Preserve the sample's `data/` subdirectory so samples
-                    # that call sdkFindFilePath(\"data/foo.bin\") can locate
-                    # their reference files.
-                    if(\"\${SAMPLE_FILE}\" MATCHES \"/data/([^/]+)$\")
-                        set(DEST_FILE \"\${INSTALL_DIR}/data/\${CMAKE_MATCH_1}\")
-                    endif()
-
                     # Determine file type based on extension
                     get_filename_component(FILE_EXT \"\${SAMPLE_FILE}\" EXT)
                     set(IS_EXECUTABLE FALSE)
@@ -306,7 +299,7 @@ function(setup_samples_install)
                     set(IS_DATA_FILE FALSE)
 
                     # Check for known data file extensions first
-                    if(FILE_EXT MATCHES \"\\\\.(fatbin|ptx|bc|raw|ppm|bin|dat|nv12)$\")
+                    if(FILE_EXT MATCHES \"\\\\.(fatbin|ptx|bc|raw|ppm)$\")
                         set(IS_DATA_FILE TRUE)
                     # Check if it's a shared library
                     elseif(FILE_EXT MATCHES \"\\\\.(dll|so)$\")

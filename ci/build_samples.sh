@@ -14,11 +14,6 @@ source "$(dirname "${BASH_SOURCE[0]}")/build_common.sh"
 
 print_environment_details
 
-# Install GL/GLUT/GLEW system dependencies needed to build the GL-based
-# samples (particles, marchingCubes, smokeParticles).
-run_command "Install samples system dependencies" \
-    "$(dirname "${BASH_SOURCE[0]}")/install_samples_deps.sh"
-
 SAMPLES_SRC_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")/../samples" && pwd)"
 SAMPLES_BUILD_DIR="${BUILD_DIR}/samples"
 

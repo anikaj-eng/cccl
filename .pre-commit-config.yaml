@@ -14,34 +14,13 @@ repos:
     rev: v5.0.0
     hooks:
       - id: end-of-file-fixer
-        exclude: |
-          (?x)^(
-            .*\.raw$|
-            .*\.bin$|
-            .*\.dat$|
-            .*\.nv12$|
-            .*\.ppm$
-          )
+        exclude: '.*\.ppm$'
       - id: mixed-line-ending
-        exclude: |
-          (?x)^(
-            .*\.raw$|
-            .*\.bin$|
-            .*\.dat$|
-            .*\.nv12$|
-            .*\.ppm$
-          )
+        exclude: '.*\.ppm$'
       - id: trailing-whitespace
         # handled by clang-format
         exclude_types: [c, c++, cuda]
-        exclude: |
-          (?x)^(
-            .*\.raw$|
-            .*\.bin$|
-            .*\.dat$|
-            .*\.nv12$|
-            .*\.ppm$
-          )
+        exclude: '.*\.ppm$'
       - id: check-json
       - id: check-toml
       - id: pretty-format-json

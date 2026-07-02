@@ -6,7 +6,7 @@ This sample demonstrates `cub::DeviceSegmentedScan`. A segmented scan computes a
 
 ## Key Concepts
 
-CUB Device Algorithms, Segmented Scan, Prefix Sum
+CCCL CUB, CCCL Thrust, CCCL libcu++, CUB Device Algorithms, Segmented Scan, Prefix Sum
 
 ## Supported SM Architectures
 
@@ -24,11 +24,15 @@ x86_64, aarch64
 
 ### [CCCL CUB](https://nvidia.github.io/cccl/cub/)
 
-cub::DeviceSegmentedScan::ExclusiveSegmentedSum, cub::DeviceSegmentedScan::InclusiveSegmentedScan
+`cub::DeviceSegmentedScan::ExclusiveSegmentedSum`, `cub::DeviceSegmentedScan::InclusiveSegmentedScan` (`<cub/device/device_segmented_scan.cuh>`)
+
+### [CCCL Thrust](https://nvidia.github.io/cccl/thrust/)
+
+`thrust::device_vector` (`<thrust/device_vector.h>`), `thrust::host_vector` (`<thrust/host_vector.h>`), `thrust::raw_pointer_cast`
 
 ### [CCCL libcu++](https://nvidia.github.io/cccl/libcudacxx/)
 
-cuda::maximum
+`cuda::maximum` (`<cuda/functional>`)
 
 ### [CUDA Runtime API](http://docs.nvidia.com/cuda/cuda-runtime-api/index.html)
 

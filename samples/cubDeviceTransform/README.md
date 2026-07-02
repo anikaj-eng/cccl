@@ -6,7 +6,7 @@ This sample demonstrates `cub::DeviceTransform` in its N-input / M-output form. 
 
 ## Key Concepts
 
-CCCL 3.3, CUB Device Algorithms, Fused Elementwise Transforms, Counting Iterators
+CCCL 3.3, CCCL CUB, CCCL Thrust, CCCL libcu++, Fused Elementwise Transforms, Counting Iterators
 
 ## Supported SM Architectures
 
@@ -24,11 +24,15 @@ x86_64, aarch64
 
 ### [CCCL CUB](https://nvidia.github.io/cccl/cub/)
 
-cub::DeviceTransform::Transform
+`cub::DeviceTransform::Transform` (`<cub/device/device_transform.cuh>`)
+
+### [CCCL Thrust](https://nvidia.github.io/cccl/thrust/)
+
+`thrust::device_vector` (`<thrust/device_vector.h>`), `thrust::host_vector` (`<thrust/host_vector.h>`)
 
 ### [CCCL libcu++](https://nvidia.github.io/cccl/libcudacxx/)
 
-cuda::counting_iterator, cuda::std::tuple
+`cuda::counting_iterator`, `cuda::std::tuple` (`<cuda/std/tuple>`)
 
 ### [CUDA Runtime API](http://docs.nvidia.com/cuda/cuda-runtime-api/index.html)
 

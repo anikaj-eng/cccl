@@ -13,12 +13,6 @@ source "$(dirname "${BASH_SOURCE[0]}")/build_common.sh"
 
 print_environment_details
 
-# The GL-based samples link against libGLX / libglut / libGLU. Since each
-# devcontainer launch spawns a fresh container from the base image, the
-# runtime libraries installed at build time are not present now.
-run_command "Install samples runtime dependencies" \
-    "$(dirname "${BASH_SOURCE[0]}")/install_samples_deps.sh"
-
 fail_if_no_gpu
 
 SAMPLES_SRC_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")/../samples" && pwd)"

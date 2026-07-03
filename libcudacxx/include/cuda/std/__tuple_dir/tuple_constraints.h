@@ -94,7 +94,7 @@ template <class... _Types>
 struct __tuple_constraints
 {
   template <int = 0>
-  [[nodiscard]] _CCCL_API static _CCCL_CONSTEVAL __select_constructor __tuple_select_default_constructible() noexcept
+  [[nodiscard]] _CCCL_API static _CCCL_CONSTEVAL __select_constructor __select_default_constructible() noexcept
   {
     if constexpr (!(is_default_constructible_v<_Types> && ...))
     {
@@ -111,8 +111,7 @@ struct __tuple_constraints
   }
 
   template <int = 0>
-  [[nodiscard]] _CCCL_API static _CCCL_CONSTEVAL __select_constructor
-  __tuple_select_variadic_copy_constructible() noexcept
+  [[nodiscard]] _CCCL_API static _CCCL_CONSTEVAL __select_constructor __select_variadic_copy_constructible() noexcept
   {
     if constexpr (!(is_copy_constructible_v<_Types> && ...))
     {
@@ -129,8 +128,7 @@ struct __tuple_constraints
   }
 
   template <int = 0>
-  [[nodiscard]] _CCCL_API static _CCCL_CONSTEVAL __select_constructor
-  __tuple_select_variadic_move_constructible() noexcept
+  [[nodiscard]] _CCCL_API static _CCCL_CONSTEVAL __select_constructor __select_variadic_move_constructible() noexcept
   {
     if constexpr (!(is_move_constructible_v<_Types> && ...))
     {
@@ -148,7 +146,7 @@ struct __tuple_constraints
 
   template <class... _UTypes>
   [[nodiscard]] _CCCL_API static _CCCL_CONSTEVAL __select_constructor
-  __tuple_select_variadic_constructible(__tuple_types<_UTypes...>) noexcept
+  __select_variadic_constructible(__tuple_types<_UTypes...>) noexcept
   {
     if constexpr (sizeof...(_Types) != sizeof...(_UTypes))
     { // [tuple.cnstr]-13.1: sizeof...(Types) equals sizeof...(UTypes),
@@ -213,7 +211,7 @@ struct __tuple_constraints
 
   template <class _UType>
   [[nodiscard]] _CCCL_API static _CCCL_CONSTEVAL __select_constructor
-  __tuple_select_variadic_constructible(__tuple_types<_UType>) noexcept
+  __select_variadic_constructible(__tuple_types<_UType>) noexcept
   {
     if constexpr (sizeof...(_Types) != 1)
     {
@@ -257,7 +255,7 @@ struct __tuple_constraints
 
   template <class... _UTypes>
   [[nodiscard]] _CCCL_API static _CCCL_CONSTEVAL __select_constructor
-  __tuple_select_variadic_constructible_less_rank(__tuple_types<_UTypes...>) noexcept
+  __select_variadic_constructible_less_rank(__tuple_types<_UTypes...>) noexcept
   {
     if constexpr (!(sizeof...(_UTypes) < sizeof...(_Types)))
     {
@@ -275,9 +273,9 @@ struct __tuple_constraints
     { // MSVC has issues with constexpr variables here, so no `__can_construct<_Trait>` or constexpr variable
       using __arg_list        = __make_tuple_types_t<__tuple_types<_Types...>, sizeof...(_UTypes)>;
       using __arg_constraints = decltype(__get_tuple_constraints(__arg_list{}));
-      if constexpr (__arg_constraints::__tuple_select_variadic_constructible(__tuple_types<_UTypes...>{})
+      if constexpr (__arg_constraints::__select_variadic_constructible(__tuple_types<_UTypes...>{})
                       == __select_constructor::__invalid
-                    || __arg_constraints::__tuple_select_variadic_constructible(__tuple_types<_UTypes...>{})
+                    || __arg_constraints::__select_variadic_constructible(__tuple_types<_UTypes...>{})
                          == __select_constructor::__deleted)
       {
         return __select_constructor::__invalid;
@@ -286,9 +284,8 @@ struct __tuple_constraints
       {
         using __defaulted_list = __make_tuple_types_t<__tuple_types<_Types...>, sizeof...(_Types), sizeof...(_UTypes)>;
         using __defautled_constraints = decltype(__get_tuple_constraints(__defaulted_list{}));
-        if constexpr (__defautled_constraints::__tuple_select_default_constructible() == __select_constructor::__invalid
-                      || __defautled_constraints::__tuple_select_default_constructible()
-                           == __select_constructor::__deleted)
+        if constexpr (__defautled_constraints::__select_default_constructible() == __select_constructor::__invalid
+                      || __defautled_constraints::__select_default_constructible() == __select_constructor::__deleted)
         {
           return __select_constructor::__invalid;
         }
@@ -304,7 +301,7 @@ struct __tuple_constraints
   _CCCL_EXEC_CHECK_DISABLE
   template <class _UTuple, size_t... _Indices>
   [[nodiscard]] _CCCL_API static _CCCL_CONSTEVAL __select_constructor
-  __tuple_select_tuple_like_constructible(__tuple_indices<_Indices...>) noexcept
+  __select_tuple_like_constructible(__tuple_indices<_Indices...>) noexcept
   {
     using ::cuda::std::get;
     if constexpr (__is_cuda_std_ranges_subrange_v<remove_cvref_t<_UTuple>>)
@@ -358,7 +355,7 @@ struct __tuple_constraints
   _CCCL_EXEC_CHECK_DISABLE
   template <class _UTuple, size_t _Index>
   [[nodiscard]] _CCCL_API static _CCCL_CONSTEVAL __select_constructor
-  __tuple_select_tuple_like_constructible(__tuple_indices<_Index>) noexcept
+  __select_tuple_like_constructible(__tuple_indices<_Index>) noexcept
   {
     using ::cuda::std::get;
     if constexpr (__is_cuda_std_ranges_subrange_v<remove_cvref_t<_UTuple>>)
@@ -434,7 +431,7 @@ struct __tuple_constraints
   }
 
   template <int = 0>
-  [[nodiscard]] _CCCL_API static _CCCL_CONSTEVAL __select_assignment __tuple_select_const_copy_assignable() noexcept
+  [[nodiscard]] _CCCL_API static _CCCL_CONSTEVAL __select_assignment __select_const_copy_assignable() noexcept
   {
     if constexpr (!(is_copy_assignable_v<const _Types> && ...))
     { // [tuple.assign]-5: is_copy_assignable_v<const Types> is true for all i.
@@ -451,7 +448,7 @@ struct __tuple_constraints
   }
 
   template <int = 0>
-  [[nodiscard]] _CCCL_API static _CCCL_CONSTEVAL __select_assignment __tuple_select_const_move_assignable() noexcept
+  [[nodiscard]] _CCCL_API static _CCCL_CONSTEVAL __select_assignment __select_const_move_assignable() noexcept
   {
     if constexpr (!(is_assignable_v<const _Types&, _Types> && ...))
     { // [tuple.assign]-12: is_assignable_v<const Types&, Types> is true for all i.
@@ -469,7 +466,7 @@ struct __tuple_constraints
 
   template <bool _IsConst, class... _UTypes>
   [[nodiscard]] _CCCL_API static _CCCL_CONSTEVAL __select_assignment
-  __tuple_select_converting_assignable(__tuple_types<_UTypes...>) noexcept
+  __select_converting_assignable(__tuple_types<_UTypes...>) noexcept
   {
     if constexpr (sizeof...(_Types) != sizeof...(_UTypes))
     { // [tuple.assign]-15.1: sizeof...(Types) equals sizeof...(UTypes) and
@@ -509,7 +506,7 @@ struct __tuple_constraints
   _CCCL_EXEC_CHECK_DISABLE
   template <bool _IsConst, class _UTuple, size_t... _Indices>
   [[nodiscard]] _CCCL_API static _CCCL_CONSTEVAL __select_assignment
-  __tuple_select_tuple_like_assignable(__tuple_indices<_Indices...>) noexcept
+  __select_tuple_like_assignable(__tuple_indices<_Indices...>) noexcept
   {
     using ::cuda::std::get;
     if constexpr (is_same_v<remove_cvref_t<_UTuple>, tuple<_Types...>>)

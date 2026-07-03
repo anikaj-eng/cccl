@@ -92,7 +92,9 @@ public:
   _CCCL_API constexpr tuple() noexcept((is_nothrow_default_constructible_v<_Tp> && ...))
   {}
 
-  template <__select_constructor _Trait = __constraints::__tuple_select_default_constructible(),
+  // clang has issues with deduction without the size != 0 check
+  template <enable_if_t<sizeof...(_Tp) != 0, int> = 0,
+            __select_constructor _Trait           = __constraints::__tuple_select_default_constructible(),
             enable_if_t<__can_construct_explicitly<_Trait>, int> = 0>
   _CCCL_API explicit constexpr tuple() noexcept((is_nothrow_default_constructible_v<_Tp> && ...))
   {}

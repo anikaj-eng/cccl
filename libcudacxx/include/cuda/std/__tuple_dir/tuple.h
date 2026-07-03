@@ -216,26 +216,19 @@ public:
   constexpr tuple(allocator_arg_t, const _Alloc&, _UTypes&&...) = delete;
 #endif // _CCCL_BUILTIN_REFERENCE_CONSTRUCTS_FROM_TEMPORARY
 
-  template <class... _UTypes>
-  using _VariadicConstraintsLessRank =
-    integral_constant<__select_constructor,
-                      __constraints::__select_variadic_constructible_less_rank(__tuple_types<_UTypes...>{})>;
-
-  template <class... _UTypes,
-            enable_if_t<(sizeof...(_UTypes) < sizeof...(_Tp)), int> = 0,
-            enable_if_t<(sizeof...(_UTypes) != 0), int>             = 0,
-            __select_constructor _Trait                             = _VariadicConstraintsLessRank<_UTypes...>::value,
-            enable_if_t<__can_construct_explicitly<_Trait>, int>    = 0>
+  template <
+    class... _UTypes,
+    __select_constructor _Trait = __constraints::__select_variadic_constructible_less_rank(__tuple_types<_UTypes...>{}),
+    enable_if_t<__can_construct_explicitly<_Trait>, int> = 0>
   _CCCL_API constexpr explicit tuple(_UTypes&&... __u)
       : __base_(__tuple_variadic_constructor_tag{}, ::cuda::std::forward<_UTypes>(__u)...)
   {}
 
 #if defined(_CCCL_BUILTIN_REFERENCE_CONSTRUCTS_FROM_TEMPORARY)
-  template <class... _UTypes,
-            enable_if_t<(sizeof...(_UTypes) < sizeof...(_Tp)), int> = 0,
-            enable_if_t<(sizeof...(_UTypes) != 0), int>             = 0,
-            __select_constructor _Trait                             = _VariadicConstraintsLessRank<_UTypes...>::value,
-            enable_if_t<__is_deleted<_Trait>, int>                  = 0>
+  template <
+    class... _UTypes,
+    __select_constructor _Trait = __constraints::__select_variadic_constructible_less_rank(__tuple_types<_UTypes...>{}),
+    enable_if_t<__is_deleted<_Trait>, int> = 0>
   constexpr tuple(_UTypes&&...) = delete;
 #endif // _CCCL_BUILTIN_REFERENCE_CONSTRUCTS_FROM_TEMPORARY
 

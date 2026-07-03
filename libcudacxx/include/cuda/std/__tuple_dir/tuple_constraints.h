@@ -549,38 +549,22 @@ struct __tuple_constraints
       return __select_assignment::__invalid;
     }
   }
-};
 
-struct _InvalidTupleComparison
-{
-  static constexpr bool __equality_comparable         = false;
-  static constexpr bool __nothrow_equality_comparable = false;
+  template <class... _UTypes>
+  static constexpr bool __tuple_all_equality_comparable_v = (__is_cpp17_equality_comparable_v<_Types, _UTypes> && ...);
 
-  static constexpr bool __less_than_comparable         = false;
-  static constexpr bool __nothrow_less_than_comparable = false;
-};
-
-template <class, class>
-struct _TupleComparableTraits;
-
-template <class... _Types, class... _UTypes>
-struct _TupleComparableTraits<__tuple_types<_Types...>, __tuple_types<_UTypes...>>
-{
-  static constexpr bool __equality_comparable = (__is_cpp17_equality_comparable_v<_Types, _UTypes> && ...);
-  static constexpr bool __nothrow_equality_comparable =
+  template <class... _UTypes>
+  static constexpr bool __tuple_all_nothrow_equality_comparable_v =
     (__is_cpp17_nothrow_equality_comparable_v<_Types, _UTypes> && ...);
 
-  static constexpr bool __less_than_comparable = (__is_cpp17_less_than_comparable_v<_Types, _UTypes> && ...);
-  static constexpr bool __nothrow_less_than_comparable =
+  template <class... _UTypes>
+  static constexpr bool __tuple_all_less_than_comparable_v =
+    (__is_cpp17_less_than_comparable_v<_Types, _UTypes> && ...);
+
+  template <class... _UTypes>
+  static constexpr bool __tuple_all_nothrow_less_than_comparable_v =
     (__is_cpp17_nothrow_less_than_comparable_v<_Types, _UTypes> && ...);
 };
-
-template <class... _Types, class... _UTypes, enable_if_t<(sizeof...(_Types) == sizeof...(_UTypes)), int> = 0>
-[[nodiscard]]
-_CCCL_API _CCCL_CONSTEVAL auto __tuple_is_comparable(__tuple_types<_Types...>, __tuple_types<_UTypes...>) noexcept
-  -> _TupleComparableTraits<__tuple_types<_Types...>, __tuple_types<_UTypes...>>;
-template <class>
-[[nodiscard]] _CCCL_API static _CCCL_CONSTEVAL auto __tuple_is_comparable(...) noexcept -> _InvalidTupleComparison;
 
 _CCCL_END_NAMESPACE_CUDA_STD
 

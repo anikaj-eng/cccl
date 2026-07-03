@@ -498,7 +498,7 @@ public:
     __select_assignment _Trait = __constraints::template __select_tuple_like_assignable</*__is_const=*/false, _UTuple>(
       __make_tuple_indices_t<sizeof...(_Tp)>{}),
     enable_if_t<__can_assign<_Trait>, int> = 0>
-  _CCCL_API constexpr tuple& operator=(_UTuple && __t) noexcept(__can_nothrow_assign<_Trait>)
+  _CCCL_API constexpr tuple& operator=(_UTuple&& __t) noexcept(__can_nothrow_assign<_Trait>)
   {
     ::cuda::std::__memberwise_tuple_assign(
       *this, ::cuda::std::forward<_UTuple>(__t), __make_tuple_indices_t<sizeof...(_Tp)>{});
@@ -512,7 +512,7 @@ public:
     __select_assignment _Trait = __constraints::template __select_tuple_like_assignable</*__is_const=*/true, _UTuple>(
       __make_tuple_indices_t<sizeof...(_Tp)>{}),
     enable_if_t<__can_assign<_Trait>, int> = 0>
-  _CCCL_API constexpr const tuple& operator=(_UTuple && __t) const noexcept(__can_nothrow_assign<_Trait>)
+  _CCCL_API constexpr const tuple& operator=(_UTuple&& __t) const noexcept(__can_nothrow_assign<_Trait>)
   {
     ::cuda::std::__memberwise_tuple_assign(
       *this, ::cuda::std::forward<_UTuple>(__t), __make_tuple_indices_t<sizeof...(_Tp)>{});

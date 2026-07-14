@@ -19,6 +19,7 @@ adapt to the installed CTK rather than hard-coding architectures.
 import numpy as np
 import pytest
 from _utils.device_array import DeviceArray
+from cuda.core import Device
 
 from cuda.compute import (
     ProxyArray,
@@ -37,7 +38,6 @@ from cuda.compute._cccl_interop import (
 from cuda.compute._target_cc import target_cc
 from cuda.compute.iterators import CountingIterator, TransformIterator
 from cuda.compute.types import from_numpy_dtype
-from cuda.core import Device
 
 try:
     from cuda.compute._build_info import USING_V2

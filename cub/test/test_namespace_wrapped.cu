@@ -25,8 +25,7 @@
 // Thrust/CUB namespaces at runtime. More extensive testing is performed by the
 // header tests and the check_namespace.cmake test.
 
-// TODO(jfaibussowit): Remove when CI clang-tidy is bumped to clang-22
-int main(int argc, char** argv) // NOLINT(bugprone-exception-escape)
+int main(int argc, char** argv)
 {
   CommandLineArgs args(argc, argv);
   CubDebugExit(args.DeviceInit());

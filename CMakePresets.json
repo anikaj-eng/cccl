@@ -533,8 +533,7 @@
         "libcudacxx.test.atomics.ptx",
         "libcudacxx.test.simd.ptx",
         "libcudacxx.test.c2h_all",
-        "libcudacxx.test.debugging.buffer",
-        "libcudacxx.test.debugging.memory_resource"
+        "libcudacxx.test.debugging"
       ]
     },
     {

@@ -1,4 +1,10 @@
-function(libcudacxx_find_debuggers)
+set(LIBCUDACXX_SUPPORTED_DEBUGGERS lldb gdb)
+
+function(libcudacxx_init_debugger_testing enabled_var)
+  # Unconditionally create the umbrella target to make CMakePresets easier to setup. If we
+  # don't have the debuggers available, this target doesn't do anything
+  add_custom_target(libcudacxx.test.debugging)
+
   # Windows lldb is broken sometimes (see
   # https://github.com/llvm/llvm-project/issues/74073) so merely finding it does not mean
   # it is functional. In any case, it is good to validate the binary in any case since
@@ -18,7 +24,8 @@ function(libcudacxx_find_debuggers)
     endif()
   endfunction()
 
-  foreach (debugger IN ITEMS lldb gdb)
+  set(enabled FALSE)
+  foreach (debugger IN LISTS LIBCUDACXX_SUPPORTED_DEBUGGERS)
     string(TOUPPER "${debugger}" DEBUGGER_UPPER)
 
     find_program(
@@ -72,19 +79,18 @@ function(libcudacxx_find_debuggers)
       "${LIBCUDACXX_ENABLE_${DEBUGGER_UPPER}_TESTING}"
       PARENT_SCOPE
     )
+
+    if (LIBCUDACXX_ENABLE_${DEBUGGER_UPPER}_TESTING)
+      set(enabled TRUE)
+    endif()
   endforeach()
+
+  set(${enabled_var} ${enabled} PARENT_SCOPE)
 endfunction()
 
-libcudacxx_find_debuggers()
+libcudacxx_init_debugger_testing(testing_enabled)
 
-# Unconditionally create the umbrella target to make CMakePresets easier to setup. If we
-# don't have the debuggers available, this target doesn't do anything
-add_custom_target(libcudacxx.test.debugging)
-
-if (
-  (NOT LIBCUDACXX_ENABLE_LLDB_TESTING)
-  AND (NOT LIBCUDACXX_ENABLE_GDB_TESTING)
-)
+if (NOT testing_enabled)
   return()
 endif()
 
@@ -158,34 +164,36 @@ function(libcudacxx_add_pretty_printer_test)
   )
   target_link_libraries(${target_name} PRIVATE libcudacxx.compiler_interface)
 
-  foreach (debugger IN ITEMS lldb gdb)
+  foreach (debugger IN LISTS LIBCUDACXX_SUPPORTED_DEBUGGERS)
     string(TOUPPER "${debugger}" debugger_upper)
-    if (LIBCUDACXX_ENABLE_${debugger_upper}_TESTING)
-      set(executable "${LIBCUDACXX_${debugger_upper}}")
-      set(
-        formatter
-        "${libcudacxx_SOURCE_DIR}/share/libcudacxx/${debugger}/__init__.py"
-      )
-      set(
-        test_name
-        "libcudacxx.test.debugging.${pretty_printer_NAME}.${debugger}"
-      )
-      add_test(
-        NAME ${test_name}
-        COMMAND
-          # gersemi: off
-        "${Python_EXECUTABLE}" "${CMAKE_CURRENT_FUNCTION_LIST_DIR}/run_pretty_printer_test.py"
-          --debugger "${debugger}"
-          --debugger-executable "${executable}"
-          --program "$<TARGET_FILE:${target_name}>"
-          --formatter-init "${formatter}"
-          --expected "${CMAKE_CURRENT_SOURCE_DIR}/${debugger}.expected"
-          --output-log "${CMAKE_CURRENT_BINARY_DIR}/${debugger}.log"
-          ${pretty_printer_CASES}
-        # gersemi: on
-      )
-      set_tests_properties(${test_name} PROPERTIES TIMEOUT 60)
+    if (NOT LIBCUDACXX_ENABLE_${debugger_upper}_TESTING)
+      continue()
     endif()
+
+    set(executable "${LIBCUDACXX_${debugger_upper}}")
+    set(
+      formatter
+      "${libcudacxx_SOURCE_DIR}/share/libcudacxx/${debugger}/__init__.py"
+    )
+    set(
+      test_name
+      "libcudacxx.test.debugging.${pretty_printer_NAME}.${debugger}"
+    )
+    add_test(
+      NAME ${test_name}
+      COMMAND
+        # gersemi: off
+      "${Python_EXECUTABLE}" "${CMAKE_CURRENT_FUNCTION_LIST_DIR}/run_pretty_printer_test.py"
+      --debugger "${debugger}"
+      --debugger-executable "${executable}"
+      --program "$<TARGET_FILE:${target_name}>"
+      --formatter-init "${formatter}"
+      --expected "${CMAKE_CURRENT_SOURCE_DIR}/${debugger}.expected"
+      --output-log "${CMAKE_CURRENT_BINARY_DIR}/${debugger}.log"
+      ${pretty_printer_CASES}
+      # gersemi: on
+    )
+    set_tests_properties(${test_name} PROPERTIES TIMEOUT 60)
   endforeach()
 endfunction()
 

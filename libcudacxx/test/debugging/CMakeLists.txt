@@ -162,7 +162,10 @@ function(libcudacxx_add_pretty_printer_test)
     string(TOUPPER "${debugger}" debugger_upper)
     if (LIBCUDACXX_ENABLE_${debugger_upper}_TESTING)
       set(executable "${LIBCUDACXX_${debugger_upper}}")
-      set(formatter "${libcudacxx_SOURCE_DIR}/share/${debugger}/__init__.py")
+      set(
+        formatter
+        "${libcudacxx_SOURCE_DIR}/share/libcudacxx/${debugger}/__init__.py"
+      )
       set(
         test_name
         "libcudacxx.test.debugging.${pretty_printer_NAME}.${debugger}"

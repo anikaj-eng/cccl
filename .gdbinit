@@ -1,1 +1,1 @@
-source libcudacxx/share/gdb/__init__.py
+source libcudacxx/share/libcudacxx/gdb/__init__.py

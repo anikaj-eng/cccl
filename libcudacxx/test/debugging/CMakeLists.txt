@@ -1,4 +1,9 @@
 function(libcudacxx_find_debuggers)
+  # Windows lldb is broken sometimes (see
+  # https://github.com/llvm/llvm-project/issues/74073) so merely finding it does not mean
+  # it is functional. In any case, it is good to validate the binary in any case since
+  # even a found lldb/gdb on other platforms that ends up not working is annoying to work
+  # around
   function(validator result_var item)
     execute_process(
       COMMAND ${item} --version

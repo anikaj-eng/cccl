@@ -1,8 +1,26 @@
 function(libcudacxx_find_debuggers)
+  function(validator result_var item)
+    execute_process(
+      COMMAND ${item} --version
+      RESULT_VARIABLE result
+      COMMAND_ERROR_IS_FATAL NONE
+    )
+
+    if (result EQUAL 0)
+      set(${result_var} TRUE PARENT_SCOPE)
+    else()
+      set(${result_var} FALSE PARENT_SCOPE)
+    endif()
+  endfunction()
+
   foreach (debugger IN ITEMS lldb gdb)
     string(TOUPPER "${debugger}" DEBUGGER_UPPER)
 
-    find_program(LIBCUDACXX_${DEBUGGER_UPPER} NAMES "${debugger}")
+    find_program(
+      LIBCUDACXX_${DEBUGGER_UPPER}
+      NAMES "${debugger}"
+      VALIDATOR validator
+    )
 
     if (LIBCUDACXX_${DEBUGGER_UPPER})
       set(debugger_exe "${LIBCUDACXX_${DEBUGGER_UPPER}}")

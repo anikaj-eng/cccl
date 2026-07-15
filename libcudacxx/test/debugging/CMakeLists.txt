@@ -54,6 +54,10 @@ endfunction()
 
 libcudacxx_find_debuggers()
 
+# Unconditionally create the umbrella target to make CMakePresets easier to setup. If we
+# don't have the debuggers available, this target doesn't do anything
+add_custom_target(libcudacxx.test.debugging)
+
 if (
   (NOT LIBCUDACXX_ENABLE_LLDB_TESTING)
   AND (NOT LIBCUDACXX_ENABLE_GDB_TESTING)

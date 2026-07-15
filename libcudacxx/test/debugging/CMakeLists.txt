@@ -1,51 +1,65 @@
-find_program(LIBCUDACXX_GDB_EXECUTABLE NAMES gdb)
-find_program(LIBCUDACXX_LLDB_EXECUTABLE NAMES lldb)
+function(libcudacxx_find_debuggers)
+  foreach (debugger IN ITEMS lldb gdb)
+    string(TOUPPER "${debugger}" DEBUGGER_UPPER)
 
-set(gdb_default OFF)
-if (LIBCUDACXX_GDB_EXECUTABLE)
-  set(gdb_default ON)
-endif()
-option(
-  LIBCUDACXX_ENABLE_GDB_TESTING
-  "Run libcudacxx pretty-printer tests with GDB"
-  ${gdb_default}
-)
+    find_program(LIBCUDACXX_${DEBUGGER_UPPER} NAMES "${debugger}")
 
-set(lldb_default OFF)
-if (LIBCUDACXX_LLDB_EXECUTABLE)
-  set(lldb_default ON)
-endif()
-option(
-  LIBCUDACXX_ENABLE_LLDB_TESTING
-  "Run libcudacxx pretty-printer tests with LLDB"
-  ${lldb_default}
-)
+    if (LIBCUDACXX_${DEBUGGER_UPPER})
+      set(debugger_exe "${LIBCUDACXX_${DEBUGGER_UPPER}}")
+      message(STATUS "Found ${debugger}: ${debugger_exe}")
+      execute_process(
+        COMMAND ${debugger_exe} --version
+        OUTPUT_VARIABLE version
+        ERROR_VARIABLE version
+        OUTPUT_STRIP_TRAILING_WHITESPACE
+        ERROR_STRIP_TRAILING_WHITESPACE
+        COMMAND_ERROR_IS_FATAL ANY
+      )
+      message(STATUS "${debugger_exe} --version: ${version}")
+    endif()
 
-if (LIBCUDACXX_ENABLE_GDB_TESTING AND NOT LIBCUDACXX_GDB_EXECUTABLE)
-  message(
-    FATAL_ERROR
-    "LIBCUDACXX_ENABLE_GDB_TESTING is enabled, but GDB was not found"
-  )
-endif()
-if (LIBCUDACXX_ENABLE_LLDB_TESTING AND NOT LIBCUDACXX_LLDB_EXECUTABLE)
-  message(
-    FATAL_ERROR
-    "LIBCUDACXX_ENABLE_LLDB_TESTING is enabled, but LLDB was not found"
-  )
-endif()
+    set(default OFF)
+    if (LIBCUDACXX_${DEBUGGER_UPPER})
+      set(default ON)
+    endif()
 
-set(
-  debugging_test_driver
-  "${CMAKE_CURRENT_SOURCE_DIR}/run_pretty_printer_test.py"
+    option(
+      LIBCUDACXX_ENABLE_${DEBUGGER_UPPER}_TESTING
+      "Run libcudacxx pretty-printer tests with ${debugger}"
+      ${default}
+    )
+
+    if (
+      LIBCUDACXX_ENABLE_${DEBUGGER_UPPER}_TESTING
+      AND NOT LIBCUDACXX_${DEBUGGER_UPPER}
+    )
+      message(
+        FATAL_ERROR
+        "LIBCUDACXX_ENABLE_${DEBUGGER_UPPER}_TESTING is enabled, but ${debugger} was not found"
+      )
+    endif()
+
+    set(
+      LIBCUDACXX_${DEBUGGER_UPPER}
+      "${LIBCUDACXX_${DEBUGGER_UPPER}}"
+      PARENT_SCOPE
+    )
+    set(
+      LIBCUDACXX_ENABLE_${DEBUGGER_UPPER}_TESTING
+      "${LIBCUDACXX_ENABLE_${DEBUGGER_UPPER}_TESTING}"
+      PARENT_SCOPE
+    )
+  endforeach()
+endfunction()
+
+libcudacxx_find_debuggers()
+
+if (
+  (NOT LIBCUDACXX_ENABLE_LLDB_TESTING)
+  AND (NOT LIBCUDACXX_ENABLE_GDB_TESTING)
 )
-set(
-  libcudacxx_gdb_formatter_init
-  "${libcudacxx_SOURCE_DIR}/share/gdb/__init__.py"
-)
-set(
-  libcudacxx_lldb_formatter_init
-  "${libcudacxx_SOURCE_DIR}/share/lldb/__init__.py"
-)
+  return()
+endif()
 
 #[=======================================================================[.rst:
 libcudacxx_add_pretty_printer_test
@@ -119,25 +133,28 @@ function(libcudacxx_add_pretty_printer_test)
 
   foreach (debugger IN ITEMS lldb gdb)
     string(TOUPPER "${debugger}" debugger_upper)
-    set(enabled_variable "LIBCUDACXX_ENABLE_${debugger_upper}_TESTING")
-    if (${enabled_variable})
-      set(executable_variable "LIBCUDACXX_${debugger_upper}_EXECUTABLE")
-      set(formatter_variable "libcudacxx_${debugger}_formatter_init")
+    if (LIBCUDACXX_ENABLE_${debugger_upper}_TESTING)
+      set(executable "${LIBCUDACXX_${debugger_upper}}")
+      set(formatter "${libcudacxx_SOURCE_DIR}/share/${debugger}/__init__.py")
       set(
         test_name
-        "libcudacxx.test.debugging.${debugger}.${pretty_printer_NAME}"
+        "libcudacxx.test.debugging.${pretty_printer_NAME}.${debugger}"
       )
       add_test(
         NAME ${test_name}
         COMMAND
-          "${Python_EXECUTABLE}" "${debugging_test_driver}" --debugger
-          "${debugger}" --debugger-executable "${${executable_variable}}"
-          --program "$<TARGET_FILE:${target_name}>" --formatter-init
-          "${${formatter_variable}}" --expected
-          "${CMAKE_CURRENT_SOURCE_DIR}/${debugger}.expected" --output-log
-          "${CMAKE_CURRENT_BINARY_DIR}/${debugger}.log" ${pretty_printer_CASES}
+          # gersemi: off
+        "${Python_EXECUTABLE}" "${CMAKE_CURRENT_FUNCTION_LIST_DIR}/run_pretty_printer_test.py"
+          --debugger "${debugger}"
+          --debugger-executable "${executable}"
+          --program "$<TARGET_FILE:${target_name}>"
+          --formatter-init "${formatter}"
+          --expected "${CMAKE_CURRENT_SOURCE_DIR}/${debugger}.expected"
+          --output-log "${CMAKE_CURRENT_BINARY_DIR}/${debugger}.log"
+          ${pretty_printer_CASES}
+        # gersemi: on
       )
-      set_tests_properties(${test_name} PROPERTIES RUN_SERIAL ON TIMEOUT 120)
+      set_tests_properties(${test_name} PROPERTIES TIMEOUT 60)
     endif()
   endforeach()
 endfunction()

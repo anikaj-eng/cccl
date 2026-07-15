@@ -13,8 +13,10 @@ function(libcudacxx_init_debugger_testing enabled_var)
   function(validator result_var item)
     execute_process(
       COMMAND ${item} --version
+      OUTPUT_QUIET
+      ERROR_QUIET
       RESULT_VARIABLE result
-      COMMAND_ERROR_IS_FATAL NONE
+      TIMEOUT 10
     )
 
     if (result EQUAL 0)

@@ -136,23 +136,23 @@ TEST_FUNC bool test_integral_boundaries()
   return true;
 }
 
-template <class Complex>
+template <class LhsComplex, class RhsComplex = LhsComplex>
 TEST_FUNC void test_complex()
 {
-  using T = typename Complex::value_type;
-  static_assert(cuda::std::is_same_v<bool, decltype(cuda::isclose(Complex{}, Complex{}))>);
-  static_assert(cuda::std::is_same_v<bool, decltype(cuda::isclose(Complex{}, Complex{}, 0.0f))>);
-  static_assert(cuda::std::is_same_v<bool, decltype(cuda::isclose(Complex{}, Complex{}, 0.0f, T{}))>);
-  static_assert(noexcept(cuda::isclose(cuda::std::declval<Complex>(), cuda::std::declval<Complex>())));
-  static_assert(noexcept(cuda::isclose(cuda::std::declval<Complex>(), cuda::std::declval<Complex>(), 0.0f)));
+  using T = typename LhsComplex::value_type;
+  static_assert(cuda::std::is_same_v<bool, decltype(cuda::isclose(LhsComplex{}, RhsComplex{}))>);
+  static_assert(cuda::std::is_same_v<bool, decltype(cuda::isclose(LhsComplex{}, RhsComplex{}, 0.0f))>);
+  static_assert(cuda::std::is_same_v<bool, decltype(cuda::isclose(LhsComplex{}, RhsComplex{}, 0.0f, T{}))>);
+  static_assert(noexcept(cuda::isclose(cuda::std::declval<LhsComplex>(), cuda::std::declval<RhsComplex>())));
+  static_assert(noexcept(cuda::isclose(cuda::std::declval<LhsComplex>(), cuda::std::declval<RhsComplex>(), 0.0f)));
   static_assert(noexcept(
-    cuda::isclose(cuda::std::declval<Complex>(), cuda::std::declval<Complex>(), 0.0f, cuda::std::declval<T>())));
+    cuda::isclose(cuda::std::declval<LhsComplex>(), cuda::std::declval<RhsComplex>(), 0.0f, cuda::std::declval<T>())));
 
-  assert(cuda::isclose(Complex{T{1}, T{2}}, Complex{T{1}, T{2}}));
-  assert(cuda::isclose(Complex{T{3}, T{4}}, Complex{T{3}, T{4.4}}, 0.1f));
-  assert(!cuda::isclose(Complex{T{3}, T{4}}, Complex{T{3}, T{5}}, 0.1f));
+  assert(cuda::isclose(LhsComplex{T{1}, T{2}}, RhsComplex{T{1}, T{2}}));
+  assert(cuda::isclose(LhsComplex{T{3}, T{4}}, RhsComplex{T{3}, T{4.4}}, 0.1f));
+  assert(!cuda::isclose(LhsComplex{T{3}, T{4}}, RhsComplex{T{3}, T{5}}, 0.1f));
 
-  assert(!cuda::isclose(Complex{T{0}, T{0}}, Complex{T{0.3}, T{0.4}}));
+  assert(!cuda::isclose(LhsComplex{T{0}, T{0}}, RhsComplex{T{0.3}, T{0.4}}));
   auto abs_tol = T{0.5};
 #if _LIBCUDACXX_HAS_NVBF16()
   if constexpr (cuda::std::is_same_v<T, __nv_bfloat16>)
@@ -160,15 +160,15 @@ TEST_FUNC void test_complex()
     abs_tol = T{0.51};
   }
 #endif // _LIBCUDACXX_HAS_NVBF16()
-  assert(cuda::isclose(Complex{T{0}, T{0}}, Complex{T{0.3}, T{0.4}}, 0.0f, abs_tol));
-  assert(!cuda::isclose(Complex{T{0}, T{0}}, Complex{T{0.3}, T{0.4}}, 0.0f, T{0.25}));
+  assert(cuda::isclose(LhsComplex{T{0}, T{0}}, RhsComplex{T{0.3}, T{0.4}}, 0.0f, abs_tol));
+  assert(!cuda::isclose(LhsComplex{T{0}, T{0}}, RhsComplex{T{0.3}, T{0.4}}, 0.0f, T{0.25}));
 
   const auto inf = cuda::std::numeric_limits<T>::infinity();
   const auto nan = cuda::std::numeric_limits<T>::quiet_NaN();
-  assert(cuda::isclose(Complex{inf, T{1}}, Complex{inf, T{1}}));
-  assert(!cuda::isclose(Complex{inf, T{1}}, Complex{inf, T{2}}, 1.0f));
-  assert(!cuda::isclose(Complex{nan, T{}}, Complex{nan, T{}}));
-  assert(!cuda::isclose(Complex{nan, T{}}, Complex{}));
+  assert(cuda::isclose(LhsComplex{inf, T{1}}, RhsComplex{inf, T{1}}));
+  assert(!cuda::isclose(LhsComplex{inf, T{1}}, RhsComplex{inf, T{2}}, 1.0f));
+  assert(!cuda::isclose(LhsComplex{nan, T{}}, RhsComplex{nan, T{}}));
+  assert(!cuda::isclose(LhsComplex{nan, T{}}, RhsComplex{}));
 }
 
 TEST_FUNC constexpr void test_invalid_complex_cases()
@@ -244,6 +244,10 @@ TEST_FUNC bool test_extended_fp()
 #if _CCCL_HAS_HOST_STD_LIB()
   NV_IF_TARGET(NV_IS_HOST, (test_complex_types<std::complex>();))
 #endif // _CCCL_HAS_HOST_STD_LIB()
+
+  // test complex mix
+  test_complex<cuda::std::complex<float>, cuda::complex<float>>();
+
   return true;
 }
 

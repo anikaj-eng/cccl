@@ -223,7 +223,8 @@ struct make_vsmem_helper
                            active_policy.scan_algorithm,
                            delay_constructor_t<active_policy.lookback_delay.kind,
                                                active_policy.lookback_delay.delay,
-                                               active_policy.lookback_delay.l2_write_latency>>;
+                                               active_policy.lookback_delay.l2_write_latency>,
+                           active_policy.load_prefetch>;
   using type = vsmem_helper_default_fallback_policy_t<
     agent_policy_t,
     bind_selection_opt<SelectionOpt>::template agent_t,
